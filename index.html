@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pending & Status Report – Oussama</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: oklch(0.985 0 0);
+      --surface: oklch(0.97 0.005 260);
+      --surface-elevated: oklch(1 0 0);
+      --ink: oklch(0.18 0.02 260);
+      --ink-muted: oklch(0.45 0.015 260);
+      --border: oklch(0.88 0.01 260);
+      
+      /* Topic colors */
+      --quality-primary: oklch(0.65 0.18 145);
+      --quality-bg: oklch(0.95 0.03 145);
+      --quality-border: oklch(0.85 0.06 145);
+      
+      --system-primary: oklch(0.55 0.22 285);
+      --system-bg: oklch(0.95 0.025 285);
+      --system-border: oklch(0.85 0.05 285);
+      
+      /* Status colors */
+      --pending: oklch(0.7 0.15 65);
+      --pending-bg: oklch(0.95 0.04 65);
+      --investigating: oklch(0.6 0.16 250);
+      --investigating-bg: oklch(0.95 0.03 250);
+      --monitoring: oklch(0.55 0.14 175);
+      --monitoring-bg: oklch(0.95 0.025 175);
+      
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 3rem 1.5rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 4rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .vacation-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, oklch(0.95 0.04 45), oklch(0.98 0.02 30));
+      border: 1px solid oklch(0.88 0.06 45);
+      padding: 0.5rem 1rem;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: oklch(0.45 0.1 45);
+      margin-bottom: 1.5rem;
+    }
+
+    .vacation-badge svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 2.75rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.75rem;
+      color: var(--ink);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--ink-muted);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .date {
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      color: var(--ink-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Topic Section */
+    .topic {
+      margin-bottom: 3rem;
+    }
+
+    .topic-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .topic-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .topic-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .topic--quality .topic-icon {
+      background: var(--quality-bg);
+      border: 1px solid var(--quality-border);
+      color: var(--quality-primary);
+    }
+
+    .topic--system .topic-icon {
+      background: var(--system-bg);
+      border: 1px solid var(--system-border);
+      color: var(--system-primary);
+    }
+
+    .topic-title {
+      font-size: 1.35rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    /* Item Cards */
+    .item {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      margin-bottom: 1rem;
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .item:hover {
+      box-shadow: 0 4px 20px oklch(0 0 0 / 0.04);
+      border-color: oklch(0.82 0.015 260);
+    }
+
+    .item-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .item-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.4;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      flex-shrink: 0;
+    }
+
+    .status-badge--investigating {
+      background: var(--investigating-bg);
+      color: var(--investigating);
+    }
+
+    .status-badge--monitoring {
+      background: var(--monitoring-bg);
+      color: var(--monitoring);
+    }
+
+    .status-badge--pending {
+      background: var(--pending-bg);
+      color: var(--pending);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .item-content {
+      color: var(--ink-muted);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .item-content p {
+      margin-bottom: 0.75rem;
+    }
+
+    .item-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Highlight / Key Info */
+    .highlight {
+      background: oklch(0.97 0.02 250);
+      border-left: 3px solid oklch(0.6 0.15 250);
+      padding: 1rem 1.25rem;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .highlight strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    /* Stats */
+    .stats {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px dashed var(--border);
+    }
+
+    .stat {
+      display: flex;
+      align-items: baseline;
+      gap: 0.35rem;
+    }
+
+    .stat-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--ink-muted);
+    }
+
+    /* Dependencies / Owner */
+    .dependencies {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+    }
+
+    .dependency-label {
+      font-weight: 500;
+      color: var(--ink);
+      margin-right: 0.5rem;
+    }
+
+    .dependency-value {
+      color: var(--ink-muted);
+    }
+
+    /* Learnings Box */
+    .learnings {
+      background: linear-gradient(135deg, oklch(0.97 0.015 285), oklch(0.98 0.01 260));
+      border: 1px solid oklch(0.88 0.03 285);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .learnings-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: oklch(0.5 0.12 285);
+      margin-bottom: 0.5rem;
+    }
+
+    .learnings-content {
+      font-size: 0.9rem;
+      color: var(--ink-muted);
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--ink-muted);
+      font-size: 0.9rem;
+    }
+
+    footer p {
+      margin-bottom: 0.5rem;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 2rem 1rem;
+      }
+
+      .item-header {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .stats {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+    }
+
+    @media print {
+      body {
+        padding: 1rem;
+      }
+      
+      .item {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="vacation-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+        </svg>
+        Oussama's Topics
+      </div>
+      <h1>Pending & Status Report</h1>
+      <p class="subtitle">Current state of owned initiatives and what needs attention</p>
+      <p class="date">Generated: July 29, 2026</p>
+    </header>
+
+    <!-- App Quality Score -->
+    <section class="topic topic--quality">
+      <div class="topic-header">
+        <div class="topic-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+          </svg>
+        </div>
+        <h2 class="topic-title">App Quality Score</h2>
+      </div>
+
+      <article class="item">
+        <div class="item-header">
+          <h3 class="item-title">iOS App Start to Interactive – Increase Under Investigation</h3>
+          <span class="status-badge status-badge--investigating">
+            <span class="status-dot"></span>
+            Investigating
+          </span>
+        </div>
+        <div class="item-content">
+          <p>The app start to interactive time for iOS has increased. Root cause analysis is currently underway to identify the contributing factors.</p>
+        </div>
+        <div class="highlight">
+          <strong>Action Required:</strong> Continue investigating the performance regression. Check recent changes to app initialization, dependency loading, and main thread blocking operations.
+        </div>
+      </article>
+
+      <article class="item">
+        <div class="item-header">
+          <h3 class="item-title">Android App TTI – First Week of August Monitoring</h3>
+          <span class="status-badge status-badge--monitoring">
+            <span class="status-dot"></span>
+            Monitoring
+          </span>
+        </div>
+        <div class="item-content">
+          <p>The Android app Time-To-Interactive metrics need to be monitored during the first week of August in the latest version to assess if recent optimizations have yielded improvements.</p>
+        </div>
+        <div class="highlight">
+          <strong>Action Required:</strong> Review TTI dashboards during the first week of August. Compare metrics against previous versions to validate improvement hypotheses.
+        </div>
+      </article>
+    </section>
+
+    <!-- Design System -->
+    <section class="topic topic--system">
+      <div class="topic-header">
+        <div class="topic-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+          </svg>
+        </div>
+        <h2 class="topic-title">Design System</h2>
+      </div>
+
+      <article class="item">
+        <div class="item-header">
+          <h3 class="item-title">Component Generator – GitHub Agentic Flow</h3>
+          <span class="status-badge status-badge--pending">
+            <span class="status-dot"></span>
+            Pending Polish
+          </span>
+        </div>
+        <div class="item-content">
+          <p>The design system components generator built using GitHub agentic flow is now capable of generating mergeable pull requests. The core infrastructure is working.</p>
+          <p><strong>Remaining work focuses on Figma optimization:</strong></p>
+        </div>
+        
+        <div class="highlight">
+          <strong>Pending Items:</strong>
+          <ul style="margin-top: 0.5rem; margin-left: 1.25rem; color: var(--ink-muted);">
+            <li>Polish Figma designs to be more optimized with fewer layers</li>
+            <li>Create component sets with multiple variants in the same set</li>
+            <li><strong>Dependency on Shalan:</strong> Create a Figma template containing component interactions, descriptions, and behavior documentation</li>
+          </ul>
+        </div>
+
+        <div class="dependencies">
+          <span class="dependency-label">Pending work from:</span>
+          <span class="dependency-value">Shalan and design team</span>
+        </div>
+      </article>
+
+      <article class="item">
+        <div class="item-header">
+          <h3 class="item-title">Java to Kotlin Migration – Tech Debt Reduction</h3>
+          <span class="status-badge status-badge--investigating">
+            <span class="status-dot"></span>
+            Iterating
+          </span>
+        </div>
+        <div class="item-content">
+          <p>Automated Java to Kotlin conversion to reduce technical debt. The process is showing limited success and remains non-deterministic.</p>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-value">40%</span>
+            <span class="stat-label">success rate</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">2/5</span>
+            <span class="stat-label">PRs successful</span>
+          </div>
+        </div>
+
+        <div class="highlight">
+          <strong>Rules Added:</strong>
+          <ul style="margin-top: 0.5rem; margin-left: 1.25rem; color: var(--ink-muted);">
+            <li>Exclude classes referenced in many places across the codebase</li>
+            <li>Handle lint issues during conversion</li>
+          </ul>
+        </div>
+
+        <div class="learnings">
+          <div class="learnings-title">Key Learnings</div>
+          <div class="learnings-content">
+            The current infrastructure has limitations for full CI integration and automatic compilation issue resolution. The process remains non-deterministic, requiring human oversight for complex conversions.
+          </div>
+        </div>
+      </article>
+    </section>
+
+  </div>
+</body>
+</html>
