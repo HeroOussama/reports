@@ -391,10 +391,10 @@
           </span>
         </div>
         <div class="item-content">
-          <p>The app start to interactive time for iOS has increased. Root cause analysis is currently underway to identify the contributing factors.</p>
+          <p>The app start to interactive time for iOS has increased. Investigation revealed that upgrading the <strong>dh-mob-performance-analytics-ios</strong> SDK caused a drop in app TTI reporting.</p>
         </div>
         <div class="highlight">
-          <strong>Action Required:</strong> Continue investigating the performance regression. Check recent changes to app initialization, dependency loading, and main thread blocking operations.
+          <strong>Root Cause Identified:</strong> The <code style="font-family: 'JetBrains Mono', monospace; font-size: 0.85em; background: oklch(0.93 0.02 250); padding: 0.15em 0.4em; border-radius: 4px;">dh-mob-performance-analytics-ios</code> SDK upgrade is the source of the TTI reporting regression. Further investigation is needed to determine if this is a measurement issue or an actual performance impact.
         </div>
       </article>
 
