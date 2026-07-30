@@ -447,6 +447,15 @@
         </div>
         <div class="item-content">
           <p>Starting <strong>July 7</strong>, when the release containing <strong>PR #11955</strong> (Android tag <code style="font-family: 'JetBrains Mono', monospace; font-size: 0.85em; background: oklch(0.93 0.02 25); padding: 0.15em 0.4em; border-radius: 4px;">8.0.287-1503</code>) reached 100% rollout, the FWF backend reported a ~500% increase in <code style="font-family: 'JetBrains Mono', monospace; font-size: 0.85em; background: oklch(0.93 0.02 25); padding: 0.15em 0.4em; border-radius: 4px;">v2/features</code> requests, peaking around 12:00 UTC.</p>
+          <p><strong>Backend Impact:</strong> The FWF backend service is crashing due to this high volume of traffic.</p>
+        </div>
+
+        <div class="dependencies" style="margin-bottom: 1rem;">
+          <span class="dependency-label">References:</span>
+          <span class="dependency-value" style="display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.35rem;">
+            <a href="https://deliveryhero.slack.com/archives/C08MNSGPPGA/p1785234458343849" style="color: var(--fwf-primary); text-decoration: none; border-bottom: 1px solid oklch(0.75 0.1 25);">Slack Discussion Thread</a>
+            <a href="https://deliveryhero.grafana.net/a/grafana-lokiexplore-app/explore/service/fwf-consumer-api/logs?var-ds=grafanacloud-logs&var-filters=service_name%7C%3D%7Cfwf-consumer-api&from=2026-07-18T12:23:43.000Z&to=2026-07-18T12:30:23.000Z&patterns=%5B%5D&var-fields=&var-levels=&var-metadata=&var-patterns=&var-lineFilterV2=&var-lineFilters=&timezone=browser&var-lineFormat=&var-jsonFields=&var-all-fields=&urlColumns=%5B%5D&visualizationType=%22logs%22&displayedFields=%5B%22___LOG_LINE_BODY___%22,%22___OTEL_LOG_ATTRIBUTES___%22%5D&userDisplayedFields=true&sortOrder=%22Descending%22&wrapLogMessage=false&prettifyLogMessage=false" style="color: var(--fwf-primary); text-decoration: none; border-bottom: 1px solid oklch(0.75 0.1 25);">Grafana Dashboard – fwf-consumer-api logs</a>
+          </span>
         </div>
 
         <div class="highlight" style="background: oklch(0.97 0.02 25); border-left-color: oklch(0.6 0.15 25);">
