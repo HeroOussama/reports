@@ -25,6 +25,10 @@
       --system-bg: oklch(0.95 0.025 285);
       --system-border: oklch(0.85 0.05 285);
       
+      --fwf-primary: oklch(0.58 0.2 25);
+      --fwf-bg: oklch(0.96 0.025 25);
+      --fwf-border: oklch(0.87 0.05 25);
+      
       /* Status colors */
       --pending: oklch(0.7 0.15 65);
       --pending-bg: oklch(0.95 0.04 65);
@@ -144,6 +148,12 @@
       background: var(--system-bg);
       border: 1px solid var(--system-border);
       color: var(--system-primary);
+    }
+
+    .topic--fwf .topic-icon {
+      background: var(--fwf-bg);
+      border: 1px solid var(--fwf-border);
+      color: var(--fwf-primary);
     }
 
     .topic-title {
@@ -411,6 +421,56 @@
         </div>
         <div class="highlight">
           <strong>Action Required:</strong> Review TTI dashboards during the first week of August. Compare metrics against previous versions to validate improvement hypotheses.
+        </div>
+      </article>
+    </section>
+
+    <!-- FWF Traffic Spike -->
+    <section class="topic topic--fwf">
+      <div class="topic-header">
+        <div class="topic-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </div>
+        <h2 class="topic-title">FWF v2/features Traffic Spike</h2>
+      </div>
+
+      <article class="item">
+        <div class="item-header">
+          <h3 class="item-title">~500% Increase in v2/features Requests</h3>
+          <span class="status-badge status-badge--investigating">
+            <span class="status-dot"></span>
+            Investigating
+          </span>
+        </div>
+        <div class="item-content">
+          <p>Starting <strong>July 7</strong>, when the release containing <strong>PR #11955</strong> (Android tag <code style="font-family: 'JetBrains Mono', monospace; font-size: 0.85em; background: oklch(0.93 0.02 25); padding: 0.15em 0.4em; border-radius: 4px;">8.0.287-1503</code>) reached 100% rollout, the FWF backend reported a ~500% increase in <code style="font-family: 'JetBrains Mono', monospace; font-size: 0.85em; background: oklch(0.93 0.02 25); padding: 0.15em 0.4em; border-radius: 4px;">v2/features</code> requests, peaking around 12:00 UTC.</p>
+        </div>
+
+        <div class="highlight" style="background: oklch(0.97 0.02 25); border-left-color: oklch(0.6 0.15 25);">
+          <strong>About v2/features:</strong> Called by the FWF SDK whenever the app fetches feature-flag variations. Each fetch is wrapped in a Sentry health span (<code style="font-family: 'JetBrains Mono', monospace; font-size: 0.85em;">fwf_delivery_health</code>) tagged with <code style="font-family: 'JetBrains Mono', monospace; font-size: 0.85em;">fwf.source</code> and <code style="font-family: 'JetBrains Mono', monospace; font-size: 0.85em;">fwf.success</code> outcome.
+        </div>
+
+        <div class="learnings" style="background: linear-gradient(135deg, oklch(0.97 0.015 25), oklch(0.98 0.01 35)); border-color: oklch(0.88 0.03 25);">
+          <div class="learnings-title" style="color: oklch(0.5 0.12 25);">Hypothesis (Initial)</div>
+          <div class="learnings-content">
+            PR #11955 was a crash fix ("FwfHelper.getVariations"). Its key change ensures the FWF SDK singleton always has a valid Android context. In FWF SDK v5.5.4, network calls to <code style="font-family: 'JetBrains Mono', monospace; font-size: 0.85em;">v2/features</code> are gated by a check that fails when context is null. The hypothesis is that before the fix, fetches were silently dropped when context was missing, and the fix "unblocked" these — converting previously-dropped calls into real backend requests without adding new call sites.
+          </div>
+        </div>
+
+        <div class="highlight" style="margin-top: 1rem;">
+          <strong>Open Items / Next Steps:</strong>
+          <ol style="margin-top: 0.5rem; margin-left: 1.25rem; color: var(--ink-muted); line-height: 2;">
+            <li>Break down backend v2/features increase by <strong>platform</strong> (iOS vs Android) and <strong>app_version</strong> — platform attribution must be confirmed</li>
+            <li>Overlay the backend request curve with the <strong>rollout curve of 8.0.287-1503</strong> — true causation would track adoption %, not a single flat step</li>
+            <li>Review the <strong>full changeset of tag 8.0.287-1503</strong> (all commits, not just PR #11955) for a more likely culprit</li>
+          </ol>
+        </div>
+
+        <div class="dependencies">
+          <span class="dependency-label">Data Sources:</span>
+          <span class="dependency-value">PR #11955 diff + FWF SDK v5.5.4 source (Gradle cache) · Sentry Explore → Traces, span.op:fwf_delivery_health (90-day + Jun 20–Jul 15 exports)</span>
         </div>
       </article>
     </section>
